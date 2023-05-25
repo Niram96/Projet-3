@@ -31,10 +31,6 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 
-body {
-	line-height: 1;
-}
-
 ol, ul {
 	list-style: none;
 }
@@ -57,17 +53,71 @@ table {
 /** end reset css**/
 
 body {
-	max-width: 1140px;
+	max-width: 1440px;
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
 	background: #FFFEF8;
+	line-height: 1;
+}
+
+main {
+	margin: 0 245px;
 }
 
 header {
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: space-between;
-	margin: 50px 0
+	margin: 0
+}
+
+header h1 {
+	margin-left: 150px;
+}
+
+header :nth-child(1) {
+	order: 2;
+}
+
+header :nth-child(2) {
+	order: 3;
+}
+
+header :nth-child(3) {
+	order: 1;
+}
+
+.edit-mode {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 21px;
+	width: 100%;
+	height: 59px;
+	background-color: #000000;
+	margin-right: auto;
+	margin-bottom: 38px;
+}
+
+.edit-mode :nth-child(1) {
+	display: flex;
+	flex-direction: row-reverse;
+	gap: 9px;
+	color: #FFFFFF;
+	background-color: #000000;
+	border: none;
+	font-size: 16px;
+}
+
+.edit-mode :nth-child(2) {
+	width: 216px;
+	height: 38px;
+	background-color: #FFFFFF;
+	border-radius: 60px;
+	border: none;
+	font-size: 14px;
+	font-weight: 500;
 }
 
 section {
@@ -99,9 +149,10 @@ h2{
 
 nav ul {
 	display: flex;
+	flex-direction: row-reverse;
 	align-items: center;
 	list-style-type: none;
-
+	margin-right: 150px;
 }
 
 nav li {
@@ -109,12 +160,18 @@ nav li {
 	font-size: 1.2em;
 }
 
-.btn-login, .btn-login:visited {
+nav img {
+	width: 19.36px;
+	height: 19.36px;
+	margin-top: 3px;
+}
+
+.login-btn, .login-btn:visited {
 	color: #000000;
 	text-decoration: none;
 }
 
-li:hover, .btn-login:hover {
+li:hover, .login-btn:hover {
 	color: #B1663C;
 }
 
@@ -130,24 +187,31 @@ li:hover, .btn-login:hover {
 #introduction img {
 	display: block;
 	margin: auto;
-	width: 80%;
+	margin-right: 72px;
+	width: 474px;
+	height: 355px;
 }
 
 #introduction article {
-	flex: 1
+	flex: 1;
+	font-family: 'Work Sans';
+	font-style: normal;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 16px;
 }
 
 #introduction h2 {
-	margin-bottom: 1em;
+	margin: 1em 0;
 }
 
 #introduction p {
+	width: 404px;
 	margin-bottom: 0.5em;
 }
 
 #portfolio h2 {
 	text-align: center;
-	margin-bottom: 1em;
 }
 
 .gallery {
@@ -159,7 +223,7 @@ li:hover, .btn-login:hover {
 }
 
 .filters {
-	display: flex;
+	display: none;
 	justify-content: center;
 	gap: 10px;
 	height: 58px;
@@ -176,19 +240,19 @@ li:hover, .btn-login:hover {
 	font-weight: 700;
 }
 
-.filters .btn-all {
+.filters .all-btn {
 	padding: 9px 30px 9px 28px;
 }
 
-.filters .btn-objects {
+.filters .objects-btn {
 	padding: 9px 22px 9px 20px;
 }
 
-.filters .btn-apartments {
+.filters .apartments-btn {
 	padding: 9px 15px 9px 14px;
 }
 
-.filters .btn-hotels-and-restaurant {
+.filters .hotels-and-restaurants-btn {
 	padding: 9px 11px 9px 9px;
 }
 
@@ -197,9 +261,55 @@ li:hover, .btn-login:hover {
 	color: #FFFEF8;;
 }
 
+.projects-div {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-top: 139px;
+	margin-bottom: 92px;
+	height: 36px;
+}
+
+.projects-div button, .intro-txt button, .intro-img button  {
+	display: flex;
+	flex-direction: row-reverse;
+	gap: 8px;
+	height: 16px;
+	background-color: transparent;
+	border: none;
+	margin-left: 31px; 
+
+	font-family: 'Work Sans';
+	font-style: normal;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 16px;
+	text-align: center;
+}
+
+.intro-img button {
+	margin: 15px 0 0 0;
+}
+
+.intro-txt button {
+	margin: 0;
+}
+
+.intro-txt {
+	margin-top: -50px;
+	height: 100%;
+}
+
+.projects-div .my-projects {
+	height: 100%;
+}
+
+#portfolio h2 {
+	margin: 0;
+}
+
 .gallery img {
 	width: 100%;
-
 }
 
 #contact {
@@ -258,6 +368,7 @@ footer {
 
 footer nav ul {
 	display: flex;
+	flex-direction: row;
 	justify-content: flex-end;
 	height: 100%;
 	/* margin: 2em; */
@@ -300,11 +411,11 @@ footer nav ul li {
 	height: 51px;
 }
 
-.login .btn-login {
+.login .login-btn {
 	margin-top: 47px;
 }
 
-.login .btn-login input {
+.login .login-btn input {
 	display: flex;
 	align-items: center;
 	width: 179px;
@@ -323,3 +434,48 @@ footer nav ul li {
 .login .password-forgotten {
 	color: #3D3D3D;
 }
+
+/*     Modale     */
+
+#overlay {
+    width: 100%;
+	height: 3259px;
+    background: rgba(0,0,0,0.3);
+    position: absolute;
+    top: 59px;
+    left: 0;
+    z-index: 1;
+ }
+
+ .dialog {
+	position: absolute;
+	align-items: center;
+	top: 630px;
+	height: 731px;
+	display: flex;
+	width: 630px;
+	height: 731px;
+	background-color: #FFFFFF;
+	border-radius: 10px;
+	z-index: 2;
+	padding: 0 105px;
+ }
+
+ .dialog .gallery {
+	width: 100%;
+	display: grid;
+	justify-content: center;
+	align-content: center;
+	grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	grid-column-gap: 6px;
+	grid-row-gap: 6px;
+ }
+
+ .dialog .gallery figure {
+	width: 78.12px;
+	height: 104.08px;
+ }
+
+ .dialog .gallery figure p {
+	display: none;
+ }

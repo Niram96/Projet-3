@@ -57,17 +57,27 @@ table {
 /** end reset css**/
 
 body {
-	max-width: 1140px;
+	max-width: 1440px;
 	margin:auto;
 	font-family: 'Work Sans' ;
 	font-size: 14px;
 	background: #FFFEF8;
+	line-height: 1;
+}
+
+main {
+	margin: 0 245px;
 }
 
 header {
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: space-between;
-	margin: 50px 0
+	margin-top: 50px;
+}
+
+header h1 {
+	margin-left: 150px;
 }
 
 section {
@@ -101,13 +111,19 @@ nav ul {
 	display: flex;
 	align-items: center;
 	list-style-type: none;
-
+	margin-right: 150px;
 }
 
 nav li {
 	padding: 0 10px;
 	font-size: 1.2em;
 	font-weight: 400;
+}
+
+nav img {
+	width: 19.36px;
+	height: 19.36px;
+	margin-top: 3px;
 }
 
 .login-btn, .login-btn:visited {
@@ -135,7 +151,13 @@ li:hover, .login-btn:hover {
 }
 
 #introduction article {
-	flex: 1
+	flex: 1;
+	align-items: center;
+	font-family: 'Work Sans';
+	font-style: normal;
+	font-weight: 400;
+	font-size: 14px;
+	line-height: 16px;
 }
 
 #introduction h2 {
@@ -143,6 +165,7 @@ li:hover, .login-btn:hover {
 }
 
 #introduction p {
+	width: 404px;
 	margin-bottom: 0.5em;
 }
 
@@ -163,7 +186,7 @@ li:hover, .login-btn:hover {
 	display: flex;
 	justify-content: center;
 	gap: 10px;
-	height: 58px;
+	height: 37px;
 	margin: 51px 0;
 }
 
@@ -189,7 +212,7 @@ li:hover, .login-btn:hover {
 	padding: 9px 15px 9px 14px;
 }
 
-.filters .hotels-and-restaurant-btn {
+.filters .hotels-and-restaurants-btn {
 	padding: 9px 11px 9px 9px;
 }
 
@@ -261,7 +284,7 @@ footer nav ul {
 	display: flex;
 	justify-content: flex-end;
 	height: 100%;
-	/* margin: 2em; */
+	margin: 0;
 }
 
 footer nav ul li {

@@ -83,10 +83,13 @@ hotelsAndRestaurants.addEventListener("click", function () {
     getWorks(hotelsAndRestaurantsArray);
 });
 
+
 // ********** Homepage edit ********** //
 
 function homepageEdit () {
     if (window.sessionStorage.getItem("token") !== null) {
+
+        // New CSS for the homepage edit
 
         let head  = document.getElementsByTagName('head')[0];
         let link  = document.createElement('link');
@@ -96,69 +99,104 @@ function homepageEdit () {
         link.media = 'all';
         head.appendChild(link);
 
-        let header = document.querySelector("header");
-        let editMode = document.createElement("div");
+        // Edit mode rectangle
+
+        const header = document.querySelector("header");
+        const editMode = document.createElement("div");
         editMode.classList.add("edit-mode");
 
-        let editModeBtn = document.createElement("button");
+        const editModeBtn = document.createElement("button");
         editModeBtn.innerText = "Mode édition";
 
-        let editModeImg = document.createElement("i");
-        editModeImg.classList.add("fa-sharp", "fa-light", "fa-pen-to-square");
+        const editModeBtnIcon = document.createElement("i");
+        editModeBtnIcon.classList.add("fa-sharp", "fa-solid", "fa-pen-to-square");
 
-        let publishTheChangesBtn = document.createElement("button");
+        const publishTheChangesBtn = document.createElement("button");
         publishTheChangesBtn.innerText = "publier les changements";
-
-        let projectsDiv = document.createElement("div");
-        projectsDiv.classList.add("projects-div");
-
-        let myProjects = document.querySelector(".my-projects");
-        let modify = document.createElement("button");
-        modify.classList.add("modify-btn");
-        modify.innerText = "modifier";
-        let portfolio = document.querySelector("#portfolio");
-        let gallery = document.querySelector(".gallery");
-
-        let modifyIcon = document.createElement("i");
-        modifyIcon.classList.add("fa-light", "fa-pen-to-square");
-
-        portfolio.appendChild(projectsDiv);
-        projectsDiv.appendChild(myProjects);
-        projectsDiv.appendChild(modify);
-        portfolio.insertBefore(projectsDiv, gallery);
-
-        modify.appendChild(modifyIcon)
 
         header.appendChild(editMode);
         editMode.appendChild(editModeBtn);
-        editModeBtn.appendChild(editModeImg);
+        editModeBtn.appendChild(editModeBtnIcon);
         editMode.appendChild(publishTheChangesBtn);
 
-        let loginBtn = document.querySelector(".login-btn");
+        // Modify buttons
+
+        const projectsTitleAndModifyDiv = document.createElement("div");
+        projectsTitleAndModifyDiv.classList.add("projects-title-and-modify-div");
+
+        const myProjects = document.querySelector(".my-projects");
+        const modifyBtn = document.createElement("button");
+        modifyBtn.classList.add("modify-btn");
+        modifyBtn.innerText = "modifier";
+        const portfolio = document.querySelector("#portfolio");
+        const gallery = document.querySelector(".gallery");
+
+        const modifyBtnIcon = document.createElement("i");
+        modifyBtnIcon.classList.add("fa-solid", "fa-pen-to-square");
+
+        portfolio.appendChild(projectsTitleAndModifyDiv);
+        projectsTitleAndModifyDiv.appendChild(myProjects);
+        projectsTitleAndModifyDiv.appendChild(modifyBtn);
+        portfolio.insertBefore(projectsTitleAndModifyDiv, gallery);
+        modifyBtn.appendChild(modifyBtnIcon)
+
+        const modifyBtn2 = document.querySelector(".modify-btn").cloneNode(true);
+        document.querySelector(".intro-img").appendChild(modifyBtn2);
+   
+        const modifyBtn3 = document.querySelector(".modify-btn").cloneNode(true);
+        document.querySelector(".intro-txt").appendChild(modifyBtn3);
+        document.querySelector(".intro-txt").insertBefore(modifyBtn3, document.querySelector(".intro-txt-title"));
+
+        // Login -> Logout
+
+        const loginBtn = document.querySelector(".login-btn");
         loginBtn.innerText = "logout";
 
-        modify = document.querySelector("button");
+        // Overlay creation
 
-        let modify2 = document.querySelector(".modify-btn").cloneNode(true);
-        document.querySelector(".intro-img").appendChild(modify2);
-   
-        let modify3 = document.querySelector(".modify-btn").cloneNode(true);
-        document.querySelector(".intro-txt").appendChild(modify3);
-        document.querySelector(".intro-txt").insertBefore(modify3, document.querySelector(".intro-txt-title"));
+        const overlay = document.createElement("div");
+        overlay.setAttribute("id","overlay");
+        const body = document.querySelector("body");
+        body.appendChild(overlay);
+        overlay.style.display="none";
 
-        modify.addEventListener("click", function () {
+        // Dialog, title & close button creation
 
-            let overlay = document.createElement("div");
-            overlay.setAttribute("id","overlay");
-            let body = document.querySelector("body");
-            body.appendChild(overlay);
+        let dialog = document.createElement("dialog");
+        dialog.classList.add("dialog");
+        body.appendChild(dialog);
 
-            let dialog = document.createElement("dialog");
-            dialog.classList.add("dialog");
-            body.appendChild(dialog);
-            let gallery2 = document.querySelector(".gallery").cloneNode(true);
-            dialog.appendChild(gallery2);
+        const closeBtn = document.createElement("i");
+        closeBtn.classList.add("fa-solid", "fa-xmark");
+        dialog.appendChild(closeBtn);
 
+        let dialogTitle = document.createElement("h2");
+        dialogTitle.innerHTML = "Galerie photo";
+        dialog.appendChild(dialogTitle);
+
+        // Edit mode - Dialog opening
+
+        editModeBtn.addEventListener("click", function () {
+
+            overlay.style.display="block";
+            dialog.show();
+
+            closeBtn.addEventListener("click", function () {
+                document.querySelector("dialog").close();
+                overlay.style.display = "none";
+            })
+
+            let galleryDialog = document.querySelector(".gallery").cloneNode(true);
+            dialog.appendChild(galleryDialog);
+
+            let figures = document.querySelector("dialog .gallery").querySelectorAll("figure");
+
+            for (let i=0; i < figures.length; i++) {
+                let figure = figures[i];
+                let figureBtn = document.createElement("button");
+                figureBtn.innerText = "éditer";
+                figure.appendChild(figureBtn);
+            }
 
     });
     }

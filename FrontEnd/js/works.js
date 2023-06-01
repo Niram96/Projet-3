@@ -156,7 +156,6 @@ function homepageEdit () {
         loginBtn.setAttribute("href", "index.html");
         });
 
-
         // Overlay
 
         const overlay = document.createElement("div");
@@ -165,87 +164,119 @@ function homepageEdit () {
         body.appendChild(overlay);
         overlay.style.display="none";
 
-        // Dialog, title & close buttons
+        // ********** Modale ********** //
 
         let dialog = document.createElement("dialog");
         dialog.classList.add("dialog");
         body.appendChild(dialog);
+
+        // Close dialog button
+
         const closeBtn = document.createElement("i");
         closeBtn.classList.add("fa-solid", "fa-xmark");
         dialog.appendChild(closeBtn);
-        let dialogTitle = document.createElement("h2");
-        dialogTitle.innerHTML = "Galerie photo";
-        dialog.appendChild(dialogTitle);
 
-        let compteur = 0;
-        let compteur2 = 0;
+        // *** Photo Gallery *** //
 
-        // Edit mode - Dialog opening
+        const photoGalleryDivDialog = document.createElement("div");
+        photoGalleryDivDialog.classList.add("photo-gallery-div-dialog");
+        dialog.appendChild(photoGalleryDivDialog)
 
-        editModeBtn.addEventListener("click", function editMode () {
+        const photoGalleryTitle = document.createElement("h2");
+        photoGalleryTitle.innerHTML = "Galerie photo";
+        photoGalleryDivDialog.appendChild(photoGalleryTitle);
 
-            overlay.style.display="block";
-            dialog.show();
+        const photoGalleryDiv = document.createElement("div");
+        photoGalleryDiv.classList.add("photo-gallery-div")
+        photoGalleryDivDialog.appendChild(photoGalleryDiv)
 
-            closeBtn.addEventListener("click", function () {
-                document.querySelector("dialog").close();
-                overlay.style.display = "none";
-                galleryDialog.style.display = "grid";
-                document.querySelector("dialog .add-photo-and-delete-gallery-btns .add-photo-btn").innerText = "Ajouter une photo";
-                document.querySelector("dialog .add-photo-and-delete-gallery-btns .delete-gallery-btn").style.display = "block";
-                document.querySelector("dialog h2").innerText = "Galerie photo";
-                document.querySelector("dialog .form-add-photo").style.display = "none";
-                document.querySelector("dialog .fa-arrow-left").style.display = "none";
-            });
+        function getWorksDialog (works) {
+            for (let i=0; i < works.length; i++) {
+                const work = works[i];
+                const article = document.createElement("figure");
+                const image = document.createElement("img");
+                image.src = work.imageUrl;
 
-            const galleryDialog = document.createElement("div");
-            galleryDialog.classList.add("gallery-dialog");
+                article.appendChild(image);
+                photoGalleryDiv.appendChild(article);
+                photoGalleryDivDialog.appendChild(photoGalleryDiv); 
+            }                   
+        }
 
-            // Get works in the dialog
+        getWorksDialog(works);
 
-            function getWorksDialog (works) {
-                if (compteur === 0) {
-                    for (let i=0; i < works.length; i++) {
-                        const work = works[i];
-                        const article = document.createElement("figure");
-                        const id = work.id;
-                        const image = document.createElement("img");
-                        image.src = work.imageUrl;
+        // Edit & delete buttons creation
 
-                        article.appendChild(image);
-                        galleryDialog.appendChild(article);
-                        dialog.appendChild(galleryDialog); 
-                    }                   
-                }
-            }
+        let figures = document.querySelector("dialog .photo-gallery-div").querySelectorAll("figure");
 
-            getWorksDialog(works);
+        for (let i=0; i < figures.length; i++) {
+            const figure = figures[i];
+            const figureEditBtn = document.createElement("button");
+            const figureDeleteBtn = document.createElement("button");
+            figureDeleteBtn.classList.add("figure-delete-btn", "photo-" + (i+1));
+            const figureDeleteBtnIcon = document.createElement("i");
+            figureDeleteBtnIcon.classList.add("fa-solid", "fa-trash-can");
+            figureEditBtn.innerText = "éditer";
+            figure.appendChild(figureEditBtn);
+            figureDeleteBtn.appendChild(figureDeleteBtnIcon);
+            figure.appendChild(figureDeleteBtn);
+        }
 
-            // Edit & delete buttons creation
+        for (let i=0; i < figures.length; i++) {
+            let deleteBtn = document.querySelector("dialog .photo-gallery-div figure .photo-" + (i+1));
+            let id = works[i].id;
+            let token = window.sessionStorage.getItem("token");
+            deleteBtn.addEventListener("click", function (event) { 
+                event.preventDefault();
+                fetch('http://localhost:5678/api/works/'+id, {
+                    method: 'DELETE',                        
+                    headers: {"Authorization": "Bearer " + token},
+                    body: id,
+                })
+                .then (function (response) {
+                    if (!response.ok) {
+                        alert("Erreur : Suppression non effectuée");
+                    }
+                    else {
+                        reloadWorks();
+                    }
+                return response.text(); 
+                })
+                .then(result => console.log(result))
+                .catch(error => console.log('error', error));
+            
+            })
+        }
 
-            let figures = document.querySelector("dialog .gallery-dialog").querySelectorAll("figure");
+        // Grey border
 
-            for (let i=0; i < figures.length; i++) {
-                if (compteur === 0) {
-                    const figure = figures[i];
-                    const figureEditBtn = document.createElement("button");
-                    const figureDeleteBtn = document.createElement("button");
-                    figureDeleteBtn.classList.add("figure-delete-btn", "photo-" + (i+1));
-                    const figureDeleteBtnIcon = document.createElement("i");
-                    figureDeleteBtnIcon.classList.add("fa-solid", "fa-trash-can");
-                    figureEditBtn.innerText = "éditer";
-                    figure.appendChild(figureEditBtn);
-                    figureDeleteBtn.appendChild(figureDeleteBtnIcon);
-                    figure.appendChild(figureDeleteBtn);
-                }
-            }
+        const greyBorder = document.createElement("div");
+        greyBorder.classList.add("grey-border");
+        photoGalleryDivDialog.appendChild(greyBorder);
 
-            for (let i=0; i < figures.length; i++) {
-                let deleteBtn = document.querySelector("dialog .gallery-dialog figure .photo-" + (i+1));
-                let id = works[i].id;
-                console.log(id);
+        // "Add a photo" button
+
+        const addPhotoAndDeleteGalleryBtns = document.createElement("div");
+        addPhotoAndDeleteGalleryBtns.classList.add("add-photo-and-delete-gallery-btns");
+        photoGalleryDivDialog.appendChild(addPhotoAndDeleteGalleryBtns);
+        const addPhotoBtn = document.createElement("button");
+        addPhotoBtn.classList.add("add-photo-btn");
+        addPhotoBtn.innerText = "Ajouter une photo"
+        addPhotoAndDeleteGalleryBtns.appendChild(addPhotoBtn);
+
+        // "Delete the gallery" button
+
+        const deleteGalleryBtn = document.createElement("button");
+        deleteGalleryBtn.classList.add("delete-gallery-btn");
+        deleteGalleryBtn.innerText = "Supprimer la galerie"
+        addPhotoAndDeleteGalleryBtns.appendChild(deleteGalleryBtn);
+
+        deleteGalleryBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+            for (let i=0; i < works.length; i++) {
+                let id = works[i].id
                 let token = window.sessionStorage.getItem("token");
-                deleteBtn.addEventListener("click", function () { 
+                deleteGalleryBtn.addEventListener("click", function () { 
                     fetch('http://localhost:5678/api/works/'+id, {
                         method: 'DELETE',                        
                         headers: {"Authorization": "Bearer " + token},
@@ -253,223 +284,253 @@ function homepageEdit () {
                     })
                     .then (function (response) {
                         if (!response.ok) {
-                        alert("Erreur : Suppression non effectuée");
-                        }	
+                            alert("Erreur : Suppression non effectuée");
+                        }
+                        else {
+                            reloadWorks();
+                        }
                     return response.text(); 
                     })
                     .then(result => console.log(result))
                     .catch(error => console.log('error', error));
                 })
             }
+        })
 
-            if (compteur === 0) {
-                // Grey border creation
+        const addPhotoDivDialog = document.createElement("div");
+        addPhotoDivDialog.classList.add("add-photo-div-dialog")
+        dialog.appendChild(addPhotoDivDialog);
 
-                const greyBorder = document.createElement("div");
-                greyBorder.classList.add("grey-border");
-                dialog.appendChild(greyBorder);
+        const backBtn = document.createElement("i");
+        backBtn.classList.add("fa-solid", "fa-arrow-left");
+        dialog.appendChild(backBtn);
+        dialog.insertBefore(backBtn, addPhotoDivDialog);
+   
+        const addPhotoTitle = document.createElement("h2");
+        addPhotoTitle.innerText = "Ajout photo";
+        addPhotoDivDialog.appendChild(addPhotoTitle);
 
-                // "Add a photo" button
+        const formAddPhoto = document.createElement("form");
+        formAddPhoto.classList.add("form-add-photo");
+        
+        let formImgDiv = document.createElement("div");
+        formImgDiv.classList.add("form-img-div");
+        let formImgIcon = document.createElement("i");
+        formImgIcon.classList.add("fa-sharp", "fa-regular", "fa-image", "fa-2xl");
+        let formImgInput = document.createElement("input");
+        formImgInput.classList.add("img-input");
+        formImgInput.setAttribute("type", "file");
+        formImgInput.setAttribute("name", "image");
+        let formImgButton = document.createElement("div");
+        formImgButton.classList.add("form-img-button");
+        formImgButton.innerText = "+ Ajouter photo";
+        let formImgTxt = document.createElement("p");
+        formImgTxt.innerText = "jpg, png : 4mo max";
 
-                const addPhotoAndDeleteGalleryBtns = document.createElement("div");
-                addPhotoAndDeleteGalleryBtns.classList.add("add-photo-and-delete-gallery-btns");
-                dialog.appendChild(addPhotoAndDeleteGalleryBtns);
-                const addPhotoBtn = document.createElement("button");
-                addPhotoBtn.classList.add("add-photo-btn");
-                addPhotoBtn.innerText = "Ajouter une photo"
-                addPhotoAndDeleteGalleryBtns.appendChild(addPhotoBtn);
+        let formTitleDiv = document.createElement("div");
+        formTitleDiv.classList.add("form-title-div");
+        let formTitleTitle = document.createElement("h3");
+        formTitleTitle.innerText = "Titre";
+        let formTitleInput = document.createElement("input");
+        formTitleInput.classList.add("title-input");
+        formTitleInput.setAttribute("type", "text");
+        formTitleInput.setAttribute("name", "title");
 
-                // "Delete the gallery" button
+        let formCategoryDiv = document.createElement("div");
+        formCategoryDiv.classList.add("form-category-div");
+        let formCategoryTitle = document.createElement("h3");
+        formCategoryTitle.innerText = "Catégorie";
+        let formCategoryLabel = document.createElement("label");
+        formCategoryLabel.setAttribute("for", "category-select");
+        let formCategorySelect = document.createElement("select");
+        formCategorySelect.setAttribute("name", "category");
+        formCategorySelect.setAttribute("id", "category-select");
+        let formCategoryOption = document.createElement("option");
+        formCategoryOption.setAttribute("value", "");
 
-                const deleteGalleryBtn = document.createElement("button");
-                deleteGalleryBtn.classList.add("delete-gallery-btn");
-                deleteGalleryBtn.innerText = "Supprimer la galerie"
-                addPhotoAndDeleteGalleryBtns.appendChild(deleteGalleryBtn);
+        let categoryIdList = [];
+        let categoryNameList = [];
+
+        for (let i=0; i < works.length; i++) {
+            const work = works[i];
+            const categoryId = work.category.id;
+            const categoryName = work.category.name;
+            if (!categoryIdList.includes(categoryId)) {
+                categoryIdList.push(categoryId);
+            }
+            if (!categoryNameList.includes(categoryName)) {
+                categoryNameList.push(categoryName);
+            }
+        }
+        categoryNameList.sort();
+
+        formCategorySelect.appendChild(formCategoryOption);
+
+        for (let i=0; i < categoryNameList.length; i++) {
+            let formCategoryOption = document.createElement("option");
+            let categoryName = categoryNameList[i];
+            formCategoryOption.setAttribute("value", categoryName);
+            formCategoryOption.innerText = categoryName;
+            formCategorySelect.appendChild(formCategoryOption);
+        }
+
+        formAddPhoto.appendChild(formImgDiv);
+        formImgDiv.appendChild(formImgIcon);
+        formImgDiv.appendChild(formImgButton);
+        formImgDiv.appendChild(formImgInput);
+        formImgDiv.appendChild(formImgTxt);
+        formTitleDiv.appendChild(formTitleTitle);
+        formTitleDiv.appendChild(formTitleInput);
+        formAddPhoto.appendChild(formTitleDiv);
+        formCategoryDiv.appendChild(formCategoryTitle);
+        formCategoryDiv.appendChild(formCategoryLabel);
+        formCategoryDiv.appendChild(formCategorySelect);
+        formAddPhoto.appendChild(formCategoryDiv);
+        addPhotoDivDialog.appendChild(formAddPhoto);      
+
+        // Grey border
+
+        const greyBorder2 = document.createElement("div");
+        greyBorder2.classList.add("grey-border-2");
+        addPhotoDivDialog.appendChild(greyBorder2);
+
+        // Validate button
+
+        const validateBtn = document.createElement("button");
+        validateBtn.classList.add("validate-btn-disabled");
+        validateBtn.setAttribute("disabled", "disabled");
+        validateBtn.innerText = "Valider"
+        addPhotoDivDialog.appendChild(validateBtn);
+
+        formImgInput.addEventListener("change", function () {
+            let imgUrl = formImgInput.files[0];
+            console.log(imgUrl);
+            const imgUrlType = imgUrl.type;
+            const imgUrlSize = imgUrl.size;
+            const imageTypesAccepted = new RegExp ("image/jpeg|image/jpeg|image.png");
+            let imgTypeTest = imageTypesAccepted.test(imgUrlType);
+
+            if (!imgTypeTest) {
+                alert("Erreur : Image non valide");
+                formImgInput.value = "";
+            }   
+
+            if (imgTypeTest && imgUrlSize > 4000000) {
+                alert("Erreur : Image trop volumineuse. L'image ne doit pas dépasser 4 Mo.");
+                formImgInput.value = "";
             }
 
-            const deleteGalleryBtn = document.querySelector("dialog .delete-gallery-btn");
-            deleteGalleryBtn.addEventListener("click", function () {
-                for (let i=0; i < works.length; i++) {
-                    let id = works[i].id
-                    let token = window.sessionStorage.getItem("token");
-                    deleteGalleryBtn.addEventListener("click", function () { 
-                        fetch('http://localhost:5678/api/works/'+id, {
-                            method: 'DELETE',                        
-                            headers: {"Authorization": "Bearer " + token},
-                            body: id,
-                        })
-                        .then (function (response) {
-                            if (!response.ok) {
-                            alert("Erreur : Suppression non effectuée");
-                            }	
-                        return response.text(); 
-                        })
-                        .then(result => console.log(result))
-                        .catch(error => console.log('error', error));
-                    })
-                }
+            else {
+                formImgButton.style.display = "none";
+                formImgInput.style.display = "none";
+                formImgTxt.style.display = "none";
+                formImgIcon.style.display = "none";
+                const formImgPreview = document.createElement("img");
 
-                for (let i=0; i < figures.length; i++) {
-                    if (compteur === 0) {
-                        const figure = figures[i];
-                        const figureEditBtn = document.createElement("button");
-                        const figureDeleteBtn = document.createElement("button");
-                        figureDeleteBtn.classList.add("figure-delete-btn", "photo-" + (i+1));
-                        const figureDeleteBtnIcon = document.createElement("i");
-                        figureDeleteBtnIcon.classList.add("fa-solid", "fa-trash-can");
-                        figureEditBtn.innerText = "éditer";
-                        figure.appendChild(figureEditBtn);
-                        figureDeleteBtn.appendChild(figureDeleteBtnIcon);
-                        figure.appendChild(figureDeleteBtn);
-                    }
+                const fileReader = new FileReader();
+                fileReader.readAsDataURL(imgUrl);
+                fileReader.addEventListener("load", function () {
+                  formImgPreview.src = this.result;
+                });
+                formImgDiv.appendChild(formImgPreview);
+            }
+        });
+
+        formAddPhoto.addEventListener("change", function () {
+            if (formImgInput.files[0] !== undefined && formTitleInput.value !== "" && formCategorySelect.selectedIndex !== 0) {
+                validateBtn.removeAttribute("disabled", "disabled");
+                validateBtn.setAttribute("enabled", "enabled");
+                validateBtn.classList.remove("validate-btn-disabled");
+                validateBtn.classList.add("validate-btn");
+            }
+        })
+
+        const token = window.sessionStorage.getItem("token");
+
+        validateBtn.addEventListener("click", function (event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const imgUrl = document.querySelector("dialog .add-photo-div-dialog .form-add-photo .form-img-div input").files[0];
+            const title = document.querySelector("dialog .add-photo-div-dialog .form-add-photo .form-title-div input").value;
+            const category = document.querySelector("dialog .add-photo-div-dialog .form-add-photo .form-category-div select").selectedIndex;
+    
+            formData.append("image", imgUrl);
+            formData.append("title", title);
+            formData.append("category", category);
+
+           if (imgUrl === undefined || title === "" || category === (0 || undefined)) {
+                alert("Erreur : Veuillez remplir correctement les champs.");            
+            }
+
+            fetch('http://localhost:5678/api/works/', {
+                method: 'POST',                        
+                headers: {"Authorization": "Bearer " + token},
+                body: formData,
+            })
+            .then (function (response) {
+                if (!response.ok) {
+                    alert("Erreur : Suppression non effectuée");
                 }
+                else {
+                    reloadWorks();
+                }
+            return response.text(); 
+            })
+            .then(result => console.log(result))
+            .catch(error => console.log('error', error));
+        });
+
+        // Edit mode - Dialog opening
+
+        editModeBtn.addEventListener("click", function editMode () {
+
+            overlay.style.display = "block";
+            dialog.style.display = "block";
+            photoGalleryDivDialog.style.display = "block";
+            addPhotoDivDialog.style.display = "none";
+            backBtn.style.visibility = "hidden";
+
+            overlay.addEventListener("click", function (event) {
+              if (event.target !== dialog) {
+                overlay.style.display = "none";
+                dialog.style.display = "none";
+                backBtn.style.visibility = "hidden";
+              }
             })
 
-            // "Add a photo" function
+            closeBtn.addEventListener("click", function () {
+                overlay.style.display = "none";
+                dialog.style.display = "none";
+                backBtn.style.visibility = "hidden";
+            });
 
-            const addPhotoBtn = document.querySelector("dialog .add-photo-and-delete-gallery-btns .add-photo-btn");
+            backBtn.addEventListener("click", function () {
+                addPhotoDivDialog.style.display = "none";
+                backBtn.style.visibility = "hidden";
+                photoGalleryDivDialog.style.display = "block";
+            });
+
             addPhotoBtn.addEventListener("click", function () {
-                galleryDialog.style.display = "none";
-
-                if (compteur2 === 0) {
-
-                    const backBtn = document.createElement("i");
-                    backBtn.classList.add("fa-solid", "fa-arrow-left");
-                    dialog.appendChild(backBtn);
-                    dialog.insertBefore(backBtn, document.querySelector("dialog h2"));
-                
-                    addPhotoBtn.innerText = "Valider";
-                    const deleteGalleryBtn = document.querySelector("dialog .add-photo-and-delete-gallery-btns .delete-gallery-btn");
-                    deleteGalleryBtn.style.display = "none";
-                    document.querySelector("dialog h2").innerText = "Ajout photo";
-
-                    const formAddPhoto = document.createElement("form");
-                    formAddPhoto.classList.add("form-add-photo");
-                    
-                    let formImgDiv = document.createElement("div");
-                    formImgDiv.classList.add("form-img-div");
-                    let formImgIcon = document.createElement("i");
-                    formImgIcon.classList.add("fa-sharp", "fa-regular", "fa-image", "fa-2xl");
-                    let formImgInput = document.createElement("input");
-                    formImgInput.setAttribute("type", "file");
-                    formImgInput.setAttribute("name", "image");
-                    let formImgButton = document.createElement("div");
-                    formImgButton.classList.add("form-img-button");
-                    formImgButton.innerText = "+ Ajouter photo";
-                    let formImgTxt = document.createElement("p");
-                    formImgTxt.innerText = "jpg, png : 4mo max";
-
-                    let formTitleDiv = document.createElement("div");
-                    formTitleDiv.classList.add("form-title-div");
-                    let formTitleTitle = document.createElement("h3");
-                    formTitleTitle.innerText = "Titre";
-                    let formTitleInput = document.createElement("input");
-                    formTitleInput.setAttribute("type", "text");
-                    formTitleInput.setAttribute("name", "title");
-
-                    let formCategoryDiv = document.createElement("div");
-                    formCategoryDiv.classList.add("form-category-div");
-                    let formCategoryTitle = document.createElement("h3");
-                    formCategoryTitle.innerText = "Catégorie";
-                    let formCategoryLabel = document.createElement("label");
-                    formCategoryLabel.setAttribute("for", "category-select");
-                    let formCategorySelect = document.createElement("select");
-                    formCategorySelect.setAttribute("name", "category");
-                    formCategorySelect.setAttribute("id", "category-select");
-                    let formCategoryOption = document.createElement("option");
-                    formCategoryOption.setAttribute("value", "");
-
-                    let categoryIdList = [];
-                    let categoryNameList = [];
-
-                    for (let i=0; i < works.length; i++) {
-                        const work = works[i];
-                        const categoryId = work.category.id;
-                        const categoryName = work.category.name;
-                        if (!categoryIdList.includes(categoryId)) {
-                            categoryIdList.push(categoryId);
-                        }
-                        if (!categoryNameList.includes(categoryName)) {
-                            categoryNameList.push(categoryName);
-                        }
-                    }
-
-                    formCategorySelect.appendChild(formCategoryOption);
-
-                    for (let i=0; i < categoryNameList.length; i++) {
-                        let formCategoryOption = document.createElement("option");
-                        let categoryName = categoryNameList[i];
-                        formCategoryOption.setAttribute("value", categoryName);
-                        formCategoryOption.innerText = categoryName;
-                        formCategorySelect.appendChild(formCategoryOption);
-                    }
-
-                    formAddPhoto.appendChild(formImgDiv);
-                    formImgDiv.appendChild(formImgIcon);
-                    formImgDiv.appendChild(formImgButton);
-                    formImgDiv.appendChild(formImgInput);
-                    formImgDiv.appendChild(formImgTxt);
-                    formTitleDiv.appendChild(formTitleTitle);
-                    formTitleDiv.appendChild(formTitleInput);
-                    formAddPhoto.appendChild(formTitleDiv);
-                    formCategoryDiv.appendChild(formCategoryTitle);
-                    formCategoryDiv.appendChild(formCategoryLabel);
-                    formCategoryDiv.appendChild(formCategorySelect);
-                    formAddPhoto.appendChild(formCategoryDiv);
-                    dialog.appendChild(formAddPhoto);
-
-                    dialog.insertBefore(formAddPhoto, document.querySelector("dialog .grey-border"));
-                }
-
-                const formData = new FormData();
-                const imgUrl = document.querySelector("dialog .form-add-photo .form-img-div input").files[0];
-                const title = document.querySelector("dialog .form-add-photo .form-title-div input").value;
-                const category = document.getElementById("category-select");
-                const categoryValue = category.selectedIndex;
-
-                formData.append('image', imgUrl);
-                formData.append('title', title);
-                formData.append('category', categoryValue);
-
-                const token = window.sessionStorage.getItem("token");
-
-                addPhotoBtn.addEventListener("click", function () {
-                    console.log(categoryValue);
-                    if (imgUrl === null || title === null || categoryValue === 0) {
-                        alert ("Veuillez remplir tous les champs.");
-                    }
-                    fetch('http://localhost:5678/api/works/', {
-                        method: 'POST',                        
-                        headers: {"Authorization": "Bearer " + token},
-                        body: formData,
-                    })
-                    .then (response => response.text())
-                    .then(result => console.log(result))
-                    .catch(error => console.log('error', error));
-                })
-
-                compteur2++
-
-                if (compteur2 > 0) { 
-                    document.querySelector("dialog .form-add-photo").style.display = "flex";
-                    document.querySelector("dialog .add-photo-and-delete-gallery-btns .delete-gallery-btn").style.display = "none";
-                    document.querySelector("dialog .add-photo-and-delete-gallery-btns .add-photo-btn").innerText = "Valider";
-                    document.querySelector("dialog .fa-arrow-left").style.display = "block";
-                    document.querySelector("dialog h2").innerText = "Ajout photo";
-                }
-
-                const backBtn = document.querySelector("dialog .fa-arrow-left").addEventListener("click", function () {
-                    document.querySelector("dialog .form-add-photo").style.display = "none";
-                    document.querySelector("dialog .fa-arrow-left").style.display = "none";
-                    document.querySelector("dialog .gallery-dialog").style.display = "grid";
-                    document.querySelector("dialog h2").innerText = "Galerie photo";
-                    document.querySelector("dialog .add-photo-and-delete-gallery-btns .add-photo-btn").innerText = "Ajouter une photo";
-                    document.querySelector("dialog .add-photo-and-delete-gallery-btns .delete-gallery-btn").style.display = "block";
-                })
-
-            });       
-            compteur++;
+                photoGalleryDivDialog.style.display = "none";
+                addPhotoDivDialog.style.display = "flex";
+                backBtn.style.visibility = "visible";
+            });
         });
+
+        async function reloadWorks () {
+            const response = await fetch("http://localhost:5678/api/works");
+            const works = await response.json();
+        
+            overlay.style.display = "none";
+            dialog.style.display = "none";
+            document.querySelector("body main #portfolio .gallery").innerHTML = "";
+            document.querySelector("body dialog .photo-gallery-div-dialog .photo-gallery-div").innerHTML = "";
+            getWorks (works);
+            getWorksDialog (works);
+            photoGalleryDivDialog.insertBefore(photoGalleryDiv, greyBorder);
+        }
+        
     }
 }
 

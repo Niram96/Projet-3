@@ -22,7 +22,7 @@ async function getWorks(works) {
 
 getWorks(works);
 
-// ********** Buttons Management ********** //
+// ********** Filters ********** //
 
 const allButton = document.querySelector(".all-btn");
 const ojectsButton = document.querySelector(".objects-btn");
@@ -62,20 +62,17 @@ allButton.addEventListener("click", function () {
     getWorks(works);
 });
 
-
 ojectsButton.addEventListener("click", function () {
     const gallery = document.querySelector(".gallery");
     gallery.innerHTML="";
     getWorks(objectsArray);
 });
 
-
 apartmentsButton.addEventListener("click", function () {
     const gallery = document.querySelector(".gallery");
     gallery.innerHTML="";
     getWorks(apartmentsArray);
 });
-
 
 hotelsAndRestaurants.addEventListener("click", function () {
     const gallery = document.querySelector(".gallery");
@@ -98,7 +95,7 @@ function homepageEdit () {
         link.media = 'all';
         head.appendChild(link);
 
-        // Edit mode rectangle
+        // Edit mode - black rectangle
 
         const header = document.querySelector("header");
         const editMode = document.createElement("div");
@@ -164,7 +161,7 @@ function homepageEdit () {
         body.appendChild(overlay);
         overlay.style.display="none";
 
-        // ********** Modale ********** //
+        // ********** Modale - Gallery ********** //
 
         let dialog = document.createElement("dialog");
         dialog.classList.add("dialog");
@@ -190,6 +187,8 @@ function homepageEdit () {
         photoGalleryDiv.classList.add("photo-gallery-div")
         photoGalleryDivDialog.appendChild(photoGalleryDiv)
 
+        // Recovery of work in the dialog
+
         function getWorksDialog (works) {
             for (let i=0; i < works.length; i++) {
                 const work = works[i];
@@ -200,17 +199,9 @@ function homepageEdit () {
                 article.appendChild(image);
                 photoGalleryDiv.appendChild(article);
                 photoGalleryDivDialog.appendChild(photoGalleryDiv); 
-            }                   
-        }
 
-        getWorksDialog(works);
-
-        // Edit & delete buttons creation
-        let figures = document.querySelector("dialog .photo-gallery-div").querySelectorAll("figure");
-
-        function editAndDeleteButtons () {
-            let figures = document.querySelector("dialog .photo-gallery-div").querySelectorAll("figure");
-            for (let i=0; i < figures.length; i++) {
+                // Edit and Delete buttons
+                let figures = document.querySelector("dialog .photo-gallery-div").querySelectorAll("figure");
                 const figure = figures[i];
                 let id = works[i].id;
                 const figureEditBtn = document.createElement("button");
@@ -222,12 +213,19 @@ function homepageEdit () {
                 figure.appendChild(figureEditBtn);
                 figureDeleteBtn.appendChild(figureDeleteBtnIcon);
                 figure.appendChild(figureDeleteBtn);
-            }
+            }                   
         }
 
-        editAndDeleteButtons ()
+        getWorksDialog(works);
 
-        function deleteWork () {
+        // Delete work
+
+        async function deleteWork () {
+            let figures = document.querySelector("dialog .photo-gallery-div").querySelectorAll("figure");
+
+            const response = await fetch("http://localhost:5678/api/works");
+            const works = await response.json();
+
             for (let i=0; i < figures.length; i++) {
                 let id = works[i].id;
                 let deleteBtn = document.querySelector("dialog .photo-gallery-div figure .photo-" + id);
@@ -306,10 +304,13 @@ function homepageEdit () {
             }
         })
 
+        // ********** Modale - Add a Photo ********** //
+
         const addPhotoDivDialog = document.createElement("div");
         addPhotoDivDialog.classList.add("add-photo-div-dialog")
         dialog.appendChild(addPhotoDivDialog);
 
+        // Back button
         const backBtn = document.createElement("i");
         backBtn.classList.add("fa-solid", "fa-arrow-left");
         dialog.appendChild(backBtn);
@@ -319,6 +320,7 @@ function homepageEdit () {
         addPhotoTitle.innerText = "Ajout photo";
         addPhotoDivDialog.appendChild(addPhotoTitle);
 
+        // Form
         const formAddPhoto = document.createElement("form");
         formAddPhoto.classList.add("form-add-photo");
         
@@ -357,6 +359,8 @@ function homepageEdit () {
         let formCategoryOption = document.createElement("option");
         formCategoryOption.setAttribute("value", "");
 
+        // Recovery of categories name and ID
+
         let categoryIdList = [];
         let categoryNameList = [];
 
@@ -371,7 +375,6 @@ function homepageEdit () {
                 categoryNameList.push(categoryName);
             }
         }
-        categoryNameList.sort();
 
         formCategorySelect.appendChild(formCategoryOption);
 
@@ -397,7 +400,7 @@ function homepageEdit () {
         formAddPhoto.appendChild(formCategoryDiv);
         addPhotoDivDialog.appendChild(formAddPhoto);      
 
-        // Grey border
+        // Grey border n°2
 
         const greyBorder2 = document.createElement("div");
         greyBorder2.classList.add("grey-border-2");
@@ -410,6 +413,8 @@ function homepageEdit () {
         validateBtn.setAttribute("disabled", "disabled");
         validateBtn.innerText = "Valider"
         addPhotoDivDialog.appendChild(validateBtn);
+
+        // Image check and preview
 
         formImgInput.addEventListener("change", function () {
             let imgUrl = formImgInput.files[0];
@@ -446,6 +451,8 @@ function homepageEdit () {
             }
         });
 
+        // "Validate button" enabling
+
         formAddPhoto.addEventListener("change", function () {
             if (formImgInput.files[0] !== undefined && formTitleInput.value !== "" && formCategorySelect.selectedIndex !== 0) {
                 validateBtn.removeAttribute("disabled", "disabled");
@@ -454,6 +461,10 @@ function homepageEdit () {
                 validateBtn.classList.add("validate-btn");
             }
         })
+
+        // *** Add a photo *** //
+
+        // Token recovery
 
         const token = window.sessionStorage.getItem("token");
 
@@ -492,7 +503,7 @@ function homepageEdit () {
             .catch(error => console.log('error', error));
         });
 
-        // Edit mode - Dialog opening
+        // ********** Edit mode ********** //
 
         editModeBtn.addEventListener("click", function editMode () {
 
@@ -532,6 +543,8 @@ function homepageEdit () {
             });
         });
 
+        // Reload the works
+
         async function reloadWorks () {
             const response = await fetch("http://localhost:5678/api/works");
             const works = await response.json();
@@ -542,10 +555,12 @@ function homepageEdit () {
             document.querySelector("body dialog .photo-gallery-div-dialog .photo-gallery-div").innerHTML = "";
             getWorks (works);
             getWorksDialog (works);
-            editAndDeleteButtons ();
+            /*editAndDeleteButtons ();*/
             photoGalleryDivDialog.insertBefore(photoGalleryDiv, greyBorder);
             deleteWork ();
         }
+
+        // Clean the form after adding or closing
 
         function cleanForm () {
             formImgInput.value = "";

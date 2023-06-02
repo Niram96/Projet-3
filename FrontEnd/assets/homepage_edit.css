@@ -50,10 +50,6 @@ table {
 	border-spacing: 0;
 }
 
-button {
-	cursor: pointer;
-}
-
 /** end reset css**/
 
 body {
@@ -67,6 +63,10 @@ body {
 
 main {
 	margin: 0 245px;
+}
+
+button {
+	cursor: pointer;
 }
 
 header {
@@ -353,57 +353,6 @@ footer nav ul li {
 
 }
 
-/*  Login page */
-
-.login {
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	margin-top: 150px;
-}
-
-.login h2 {
-	margin-bottom: 37px;
-}
-
-.login .e-mail p {
-	margin-bottom: 7px;
-}
-
-.login .password p {
-	margin-top: 30px;
-	margin-bottom: 6px;
-}
-
-.login input {
-	width: 379px;
-	height: 51px;
-}
-
-.login .login-btn {
-	margin-top: 47px;
-}
-
-.login .login-btn input {
-	display: flex;
-	align-items: center;
-	width: 179px;
-	height: 36px;
-	border: none;
-	border-radius: 60px;
-	margin-top: 0;
-}
-
-.login .password-forgotten {
-	color: #3D3D3D;
-	margin-top: 28px;
-	margin-bottom: 355px;
-}
-
-.login .password-forgotten {
-	color: #3D3D3D;
-}
-
 /*     Modale     */
 
 #overlay {
@@ -433,21 +382,15 @@ footer nav ul li {
 	margin: 0;
  }
 
+ dialog i {
+	cursor: pointer
+ }
+
+ /* Modale - Gallery */
+
  dialog .photo-gallery-div-dialog h2 {
 	margin-top: 38px;
 	margin-bottom: 46px;
-	align-items: center;
-	font-family: 'Work Sans';
-	font-style: normal;
-	font-weight: 400;
-	font-size: 26px;
-	line-height: 30px;
-	text-align: center;
-	color: #000000;
- }
-
- dialog .add-photo-div-dialog h2 {
-	margin-top: 38px;
 	align-items: center;
 	font-family: 'Work Sans';
 	font-style: normal;
@@ -530,13 +473,6 @@ dialog .grey-border {
 	margin-left: 105px;
 }
 
-dialog .grey-border-2 {
-	width: 420px;
-	height: 0;
-	border: 1px solid #B3B3B3;
-	margin-top: 62px;
-}
-
 dialog .add-photo-and-delete-gallery-btns {
 	position: relative;
 
@@ -574,6 +510,8 @@ dialog .delete-gallery-btn {
 	margin-bottom: 48px;
 }
 
+/* Modale - Add a Photo */
+
 dialog .add-photo-div-dialog {
 	display: flex;
 	flex-direction: column;
@@ -586,6 +524,18 @@ dialog .fa-arrow-left {
 	top: 30px;
 	left: 30px;
 }
+
+dialog .add-photo-div-dialog h2 {
+	margin-top: 38px;
+	align-items: center;
+	font-family: 'Work Sans';
+	font-style: normal;
+	font-weight: 400;
+	font-size: 26px;
+	line-height: 30px;
+	text-align: center;
+	color: #000000;
+ }
 
 dialog .add-photo-div-dialog .form-img-div {
 	display: flex;
@@ -637,8 +587,6 @@ dialog .add-photo-div-dialog .form-img-button {
 	font-size: 14px;
 	line-height: 16px;
 	color: #306685;
-
-
 }
 
 dialog .add-photo-div-dialog .form-img-div p {
@@ -692,7 +640,13 @@ dialog .add-photo-div-dialog .form-category-div select {
 	border: none;
 	box-shadow: 0px 4px 14px rgba(0, 0, 0, 0.09);
 	margin-top: 10px;
+}
 
+dialog .grey-border-2 {
+	width: 420px;
+	height: 0;
+	border: 1px solid #B3B3B3;
+	margin-top: 62px;
 }
 
 dialog .add-photo-div-dialog .validate-btn-disabled {

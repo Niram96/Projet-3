@@ -206,47 +206,56 @@ function homepageEdit () {
         getWorksDialog(works);
 
         // Edit & delete buttons creation
-
         let figures = document.querySelector("dialog .photo-gallery-div").querySelectorAll("figure");
 
-        for (let i=0; i < figures.length; i++) {
-            const figure = figures[i];
-            const figureEditBtn = document.createElement("button");
-            const figureDeleteBtn = document.createElement("button");
-            figureDeleteBtn.classList.add("figure-delete-btn", "photo-" + (i+1));
-            const figureDeleteBtnIcon = document.createElement("i");
-            figureDeleteBtnIcon.classList.add("fa-solid", "fa-trash-can");
-            figureEditBtn.innerText = "éditer";
-            figure.appendChild(figureEditBtn);
-            figureDeleteBtn.appendChild(figureDeleteBtnIcon);
-            figure.appendChild(figureDeleteBtn);
+        function editAndDeleteButtons () {
+            let figures = document.querySelector("dialog .photo-gallery-div").querySelectorAll("figure");
+            for (let i=0; i < figures.length; i++) {
+                const figure = figures[i];
+                let id = works[i].id;
+                const figureEditBtn = document.createElement("button");
+                const figureDeleteBtn = document.createElement("button");
+                figureDeleteBtn.classList.add("figure-delete-btn", "photo-" + id);
+                const figureDeleteBtnIcon = document.createElement("i");
+                figureDeleteBtnIcon.classList.add("fa-solid", "fa-trash-can");
+                figureEditBtn.innerText = "éditer";
+                figure.appendChild(figureEditBtn);
+                figureDeleteBtn.appendChild(figureDeleteBtnIcon);
+                figure.appendChild(figureDeleteBtn);
+            }
         }
 
-        for (let i=0; i < figures.length; i++) {
-            let deleteBtn = document.querySelector("dialog .photo-gallery-div figure .photo-" + (i+1));
-            let id = works[i].id;
-            let token = window.sessionStorage.getItem("token");
-            deleteBtn.addEventListener("click", function (event) { 
-                event.preventDefault();
-                fetch('http://localhost:5678/api/works/'+id, {
-                    method: 'DELETE',                        
-                    headers: {"Authorization": "Bearer " + token},
-                    body: id,
-                })
-                .then (function (response) {
-                    if (!response.ok) {
-                        alert("Erreur : Suppression non effectuée");
-                    }
-                    else {
-                        reloadWorks();
-                    }
-                return response.text(); 
-                })
-                .then(result => console.log(result))
-                .catch(error => console.log('error', error));
-            
-            })
-        }
+        editAndDeleteButtons ()
+
+        function deleteWork () {
+            for (let i=0; i < figures.length; i++) {
+                let id = works[i].id;
+                let deleteBtn = document.querySelector("dialog .photo-gallery-div figure .photo-" + id);
+                let token = window.sessionStorage.getItem("token");
+                deleteBtn.addEventListener("click", function (event) { 
+                    event.preventDefault();
+                    fetch('http://localhost:5678/api/works/'+id, {
+                        method: 'DELETE',                        
+                        headers: {"Authorization": "Bearer " + token},
+                        body: id,
+                    })
+                    .then (function (response) {
+                        if (!response.ok) {
+                            alert("Erreur : Suppression non effectuée");
+                        }
+                        else {
+                            reloadWorks();
+                        }
+                    return response.text(); 
+                    })
+                    .then(result => console.log(result))
+                    .catch(error => console.log('error', error));
+                
+                });
+            }
+        }   
+
+        deleteWork ();
 
         // Grey border
 
@@ -274,7 +283,7 @@ function homepageEdit () {
         deleteGalleryBtn.addEventListener("click", function (event) {
             event.preventDefault();
             for (let i=0; i < works.length; i++) {
-                let id = works[i].id
+                let id = works[i].id;
                 let token = window.sessionStorage.getItem("token");
                 deleteGalleryBtn.addEventListener("click", function () { 
                     fetch('http://localhost:5678/api/works/'+id, {
@@ -404,7 +413,6 @@ function homepageEdit () {
 
         formImgInput.addEventListener("change", function () {
             let imgUrl = formImgInput.files[0];
-            console.log(imgUrl);
             const imgUrlType = imgUrl.type;
             const imgUrlSize = imgUrl.size;
             const imageTypesAccepted = new RegExp ("image/jpeg|image/jpeg|image.png");
@@ -413,6 +421,7 @@ function homepageEdit () {
             if (!imgTypeTest) {
                 alert("Erreur : Image non valide");
                 formImgInput.value = "";
+                formImgPreview.style.display = "none";
             }   
 
             if (imgTypeTest && imgUrlSize > 4000000) {
@@ -426,6 +435,7 @@ function homepageEdit () {
                 formImgTxt.style.display = "none";
                 formImgIcon.style.display = "none";
                 const formImgPreview = document.createElement("img");
+                formImgPreview.style.display = "block";
 
                 const fileReader = new FileReader();
                 fileReader.readAsDataURL(imgUrl);
@@ -470,10 +480,11 @@ function homepageEdit () {
             })
             .then (function (response) {
                 if (!response.ok) {
-                    alert("Erreur : Suppression non effectuée");
+                    alert("Erreur : Ajout non effectué");
                 }
                 else {
                     reloadWorks();
+                    cleanForm ();
                 }
             return response.text(); 
             })
@@ -496,6 +507,7 @@ function homepageEdit () {
                 overlay.style.display = "none";
                 dialog.style.display = "none";
                 backBtn.style.visibility = "hidden";
+                cleanForm();
               }
             })
 
@@ -503,12 +515,14 @@ function homepageEdit () {
                 overlay.style.display = "none";
                 dialog.style.display = "none";
                 backBtn.style.visibility = "hidden";
+                cleanForm();
             });
 
             backBtn.addEventListener("click", function () {
                 addPhotoDivDialog.style.display = "none";
                 backBtn.style.visibility = "hidden";
                 photoGalleryDivDialog.style.display = "block";
+                cleanForm();
             });
 
             addPhotoBtn.addEventListener("click", function () {
@@ -528,7 +542,20 @@ function homepageEdit () {
             document.querySelector("body dialog .photo-gallery-div-dialog .photo-gallery-div").innerHTML = "";
             getWorks (works);
             getWorksDialog (works);
+            editAndDeleteButtons ();
             photoGalleryDivDialog.insertBefore(photoGalleryDiv, greyBorder);
+            deleteWork ();
+        }
+
+        function cleanForm () {
+            formImgInput.value = "";
+            formTitleInput.value = "";
+            formCategorySelect.selectedIndex = 0;
+            formImgButton.style.display = "flex";
+            formImgInput.style.display = "flex";
+            formImgTxt.style.display = "flex";
+            formImgIcon.style.display = "flex";
+            document.querySelector("dialog .add-photo-div-dialog .form-add-photo .form-img-div img").remove();
         }
         
     }

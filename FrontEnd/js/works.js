@@ -505,7 +505,7 @@ function homepageEdit () {
 
         // ********** Edit mode ********** //
 
-        editModeBtn.addEventListener("click", function editMode () {
+        modifyBtn.addEventListener("click", function editMode () {
 
             overlay.style.display = "block";
             dialog.style.display = "block";

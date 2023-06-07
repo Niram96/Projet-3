@@ -2,16 +2,37 @@ let token = "";
 
 export async function login() {
 	const formLogin = document.querySelector(".login");
+
 	formLogin.addEventListener("submit", function (event) {
 		event.preventDefault();
-		// Création de l’objet du nouvel avis.
+	
 		const login = {
 			email: event.target.querySelector("[name=e-mail]").value,
 			password: event.target.querySelector("[name=password]").value
 		};
-		// Création de la charge utile au format JSON
+
+		// Verification if the e-amil is valid and if the inputs are no empty
+		const pattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+		if (login.email === "" && login.password === "") {
+			alert ("Champs e-mail et mot de passe vides");
+			return 0;
+		}
+		if (login.email === "") {
+			alert ("Champ e-mail vide");
+			return 0;
+		}
+		if (login.password === "") {
+			alert ("Champ mot de passe vide");
+			return 0;
+		}
+		else if (!pattern.test(login.email)) {
+			alert ("Veuillez entrer une adresse e-mail valide");
+			return 0;
+		}
+
 		const data = JSON.stringify(login);
-		// Appel de la fonction fetch avec toutes les informations nécessaires
+
+		// Send data to the server
 		fetch("http://localhost:5678/api/users/login", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },

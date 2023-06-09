@@ -1,11 +1,14 @@
 let token = "";
 
 export async function login() {
+	const loginBtn = document.querySelector("header nav ul li .login-btn");
+	loginBtn.style.fontWeight = "600";
+
 	const formLogin = document.querySelector(".login");
 
 	formLogin.addEventListener("submit", function (event) {
 		event.preventDefault();
-	
+
 		const login = {
 			email: event.target.querySelector("[name=e-mail]").value,
 			password: event.target.querySelector("[name=password]").value
@@ -38,25 +41,24 @@ export async function login() {
 			headers: { "Content-Type": "application/json" },
 			body: data
 		})  
-        .then (function (response) {
-            if (!response.ok) {
-                alert("Erreur : e-mail ou mot de passe incorrect");
-            }	
-			return response.text(); 
-        })
+			.then (function (response) {
+				if (!response.ok) {
+					alert("Erreur : e-mail ou mot de passe incorrect");
+				}	
+				return response.text(); 
+			})
 
-        .then (function (result) {
-			token = JSON.parse(result).token;
-			window.sessionStorage.setItem("token", token);
-			return console.log(result);
-		})
+			.then (function (result) {
+				token = JSON.parse(result).token;
+				window.sessionStorage.setItem("token", token);
+				return console.log(result);
+			})
 
-		.then (function redirect() {
-			if (window.sessionStorage.getItem("token", token) === token) {
-				window.location.href = "index.html";
-			}
-		});
-
+			.then (function redirect() {
+				if (window.sessionStorage.getItem("token", token) === token) {
+					window.location.href = "index.html";
+				}
+			});
 	});
 }
 
